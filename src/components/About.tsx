@@ -125,7 +125,7 @@ export const About = () => {
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <h2
           ref={backgroundTextRef}
-          className="text-[12rem] md:text-[20rem] font-bold text-primary/5 animate-glow"
+          className="text-[12rem] md:text-[20rem] font-bold text-primary/5"
           style={{ fontFamily: 'Playfair Display, serif' }}
         >
           RASA
