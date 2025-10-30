@@ -298,8 +298,72 @@ export const MenuHighlight = () => {
   }, []);
 
   return (
-    <section id="menu" ref={sectionRef} className="py-16 md:py-24 bg-secondary">
-      <div className="container mx-auto px-4 md:px-6">
+    <section id="menu" ref={sectionRef} className="py-16 md:py-24 bg-secondary relative overflow-hidden">
+      {/* Animated Food Decorative Elements */}
+      <div className="absolute top-20 -left-20 w-64 h-64 opacity-20 animate-float" style={{ animationDelay: '0s' }}>
+        <img src={rendangImage} alt="" className="w-full h-full object-cover rounded-full blur-sm" />
+      </div>
+      <div className="absolute top-1/2 -right-20 w-72 h-72 opacity-15 animate-float" style={{ animationDelay: '1s' }}>
+        <img src={sateImage} alt="" className="w-full h-full object-cover rounded-full blur-sm" />
+      </div>
+      <div className="absolute bottom-20 left-10 w-56 h-56 opacity-20 animate-float" style={{ animationDelay: '2s' }}>
+        <img src={nasigorengImage} alt="" className="w-full h-full object-cover rounded-full blur-sm" />
+      </div>
+      
+      {/* Floating Food Icons with Scroll Animation */}
+      <div ref={(el) => {
+        if (el && sectionRef.current) {
+          gsap.set(el.children, { x: -100, opacity: 0, rotation: -45 });
+          gsap.to(el.children, {
+            x: 0,
+            opacity: 0.3,
+            rotation: 0,
+            duration: 1.5,
+            stagger: 0.2,
+            ease: "back.out(1.5)",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 70%",
+              toggleActions: "play none none reverse"
+            }
+          });
+        }
+      }} className="absolute left-0 top-1/4 space-y-8 pointer-events-none hidden md:block">
+        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float">
+          <img src={ayamgorengImage} alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float" style={{ animationDelay: '0.5s' }}>
+          <img src={sotoImage} alt="" className="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      <div ref={(el) => {
+        if (el && sectionRef.current) {
+          gsap.set(el.children, { x: 100, opacity: 0, rotation: 45 });
+          gsap.to(el.children, {
+            x: 0,
+            opacity: 0.3,
+            rotation: 0,
+            duration: 1.5,
+            stagger: 0.2,
+            ease: "back.out(1.5)",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 70%",
+              toggleActions: "play none none reverse"
+            }
+          });
+        }
+      }} className="absolute right-0 top-1/3 space-y-8 pointer-events-none hidden md:block">
+        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float" style={{ animationDelay: '0.3s' }}>
+          <img src={gadogadoImage} alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float" style={{ animationDelay: '0.8s' }}>
+          <img src={rendangImage} alt="" className="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Header */}
         <div ref={headerRef} className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
           <p className="text-primary font-semibold tracking-wide uppercase text-sm mb-2">Menu Unggulan</p>
