@@ -143,10 +143,6 @@ export const About = () => {
                 className="w-full h-[500px] object-cover transition-transform duration-700 hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              
-              {/* Decorative Corner */}
-              <div className="absolute top-4 right-4 w-16 h-16 border-t-2 border-r-2 border-primary/50 rounded-tr-xl" />
-              <div className="absolute bottom-4 left-4 w-16 h-16 border-b-2 border-l-2 border-primary/50 rounded-bl-xl" />
             </div>
 
             {/* Floating Card */}
