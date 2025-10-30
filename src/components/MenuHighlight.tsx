@@ -75,90 +75,220 @@ export const MenuHighlight = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Header animation
+      // Header animation with dramatic entrance
       const headerElements = headerRef.current?.children;
       if (headerElements) {
-        gsap.set(headerElements, { y: 30, opacity: 0 });
+        gsap.set(headerElements, { y: 50, opacity: 0, scale: 0.9 });
         gsap.to(headerElements, {
           y: 0,
           opacity: 1,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: "power2.out",
+          scale: 1,
+          duration: 1,
+          stagger: 0.15,
+          ease: "back.out(1.4)",
           scrollTrigger: {
             trigger: headerRef.current,
-            start: "top 80%",
+            start: "top 85%",
             toggleActions: "play none none reverse"
           }
         });
       }
 
-      // Grid stagger animation
+      // Advanced grid stagger animation with 3D effects
       const cards = gridRef.current?.children;
       if (cards) {
-        gsap.set(cards, { y: 50, opacity: 0, scale: 0.9 });
+        // Set initial state with 3D perspective
+        gsap.set(cards, { 
+          y: 80, 
+          opacity: 0, 
+          scale: 0.8,
+          rotationX: -20,
+          transformPerspective: 1000
+        });
+        
+        // Animate in with smooth 3D entrance
         gsap.to(cards, {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: "power2.out",
+          rotationX: 0,
+          duration: 1.2,
+          stagger: {
+            each: 0.12,
+            from: "start",
+            ease: "power2.out"
+          },
+          ease: "back.out(1.2)",
           scrollTrigger: {
             trigger: gridRef.current,
-            start: "top 80%",
+            start: "top 75%",
             toggleActions: "play none none reverse"
           }
         });
 
-        // Add hover animations to cards
-        Array.from(cards).forEach((card) => {
-          const cardElement = card as HTMLElement;
-          const image = cardElement.querySelector('img');
-          const content = cardElement.querySelector('.p-6');
-
-          cardElement.addEventListener('mouseenter', () => {
-            gsap.to(cardElement, {
-              y: -10,
-              duration: 0.3,
-              ease: "power2.out"
-            });
-            if (image) {
-              gsap.to(image, {
-                scale: 1.1,
-                duration: 0.6,
-                ease: "power2.out"
-              });
-            }
-            if (content) {
-              gsap.to(content, {
-                y: -5,
-                duration: 0.3,
-                ease: "power2.out"
-              });
+        // Parallax effect on scroll for each card
+        Array.from(cards).forEach((card, index) => {
+          gsap.to(card, {
+            y: -30,
+            ease: "none",
+            scrollTrigger: {
+              trigger: card,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.5,
             }
           });
+        });
 
-          cardElement.addEventListener('mouseleave', () => {
+        // Enhanced hover/touch interactions
+        Array.from(cards).forEach((card, index) => {
+          const cardElement = card as HTMLElement;
+          const image = cardElement.querySelector('img');
+          const overlay = cardElement.querySelector('.absolute.inset-0');
+          const priceBadge = cardElement.querySelector('.absolute.bottom-2');
+          const starIcon = cardElement.querySelector('.absolute.top-2');
+
+          // Mouse enter with 3D tilt and smooth lift
+          const handleMouseEnter = (e: MouseEvent) => {
+            gsap.to(cardElement, {
+              y: -15,
+              scale: 1.02,
+              duration: 0.5,
+              ease: "power2.out",
+              boxShadow: "0 20px 40px rgba(212, 175, 55, 0.3)"
+            });
+            
+            if (image) {
+              gsap.to(image, {
+                scale: 1.15,
+                rotation: 2,
+                duration: 0.8,
+                ease: "power2.out"
+              });
+            }
+            
+            if (overlay) {
+              gsap.to(overlay, {
+                opacity: 0.95,
+                duration: 0.4
+              });
+            }
+
+            if (priceBadge) {
+              gsap.to(priceBadge, {
+                scale: 1.1,
+                y: -3,
+                duration: 0.3,
+                ease: "back.out(2)"
+              });
+            }
+
+            if (starIcon) {
+              gsap.to(starIcon, {
+                scale: 1.2,
+                rotation: 360,
+                duration: 0.5,
+                ease: "back.out(2)"
+              });
+            }
+          };
+
+          // Mouse leave with smooth return
+          const handleMouseLeave = () => {
             gsap.to(cardElement, {
               y: 0,
-              duration: 0.3,
-              ease: "power2.out"
+              scale: 1,
+              duration: 0.5,
+              ease: "power2.out",
+              boxShadow: "0 0 0 rgba(0, 0, 0, 0)"
             });
+            
             if (image) {
               gsap.to(image, {
                 scale: 1,
-                duration: 0.6,
+                rotation: 0,
+                duration: 0.8,
                 ease: "power2.out"
               });
             }
-            if (content) {
-              gsap.to(content, {
+            
+            if (overlay) {
+              gsap.to(overlay, {
+                opacity: 0.8,
+                duration: 0.4
+              });
+            }
+
+            if (priceBadge) {
+              gsap.to(priceBadge, {
+                scale: 1,
                 y: 0,
-                duration: 0.3,
-                ease: "power2.out"
+                duration: 0.3
               });
             }
+
+            if (starIcon) {
+              gsap.to(starIcon, {
+                scale: 1,
+                rotation: 0,
+                duration: 0.5
+              });
+            }
+          };
+
+          // Mouse move 3D tilt effect (desktop only)
+          const handleMouseMove = (e: MouseEvent) => {
+            if (window.innerWidth < 768) return; // Skip on mobile
+            
+            const rect = cardElement.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+
+            gsap.to(cardElement, {
+              rotationX: -rotateX,
+              rotationY: rotateY,
+              duration: 0.5,
+              ease: "power2.out",
+              transformPerspective: 1000
+            });
+          };
+
+          // Touch interactions for mobile
+          const handleTouchStart = () => {
+            gsap.to(cardElement, {
+              scale: 0.95,
+              duration: 0.2,
+              ease: "power2.out"
+            });
+          };
+
+          const handleTouchEnd = () => {
+            gsap.to(cardElement, {
+              scale: 1,
+              duration: 0.3,
+              ease: "back.out(2)"
+            });
+          };
+
+          // Add event listeners
+          cardElement.addEventListener('mouseenter', handleMouseEnter);
+          cardElement.addEventListener('mouseleave', handleMouseLeave);
+          cardElement.addEventListener('mousemove', handleMouseMove);
+          cardElement.addEventListener('touchstart', handleTouchStart);
+          cardElement.addEventListener('touchend', handleTouchEnd);
+
+          // Floating animation (subtle continuous movement)
+          gsap.to(cardElement, {
+            y: "+=10",
+            duration: 2 + index * 0.2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: index * 0.1
           });
         });
       }
@@ -187,26 +317,31 @@ export const MenuHighlight = () => {
             <Card
               key={index}
               onClick={() => handleItemClick(item)}
-              className="group overflow-hidden bg-card hover:shadow-gold transition-all duration-500 cursor-pointer border-border/50 hover:scale-105"
+              className="group overflow-hidden bg-card cursor-pointer border-border/50 will-change-transform"
+              style={{ transformStyle: 'preserve-3d' }}
             >
               {/* Image */}
               <div className="relative overflow-hidden aspect-square">
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover will-change-transform"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:from-black/90 transition-all duration-500" />
+                
+                {/* Shimmer overlay effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-all duration-500" />
 
                 {/* Price Badge */}
-                <div className="absolute bottom-2 left-2 bg-primary/90 text-primary-foreground px-2 py-1 rounded-lg text-xs font-semibold">
+                <div className="absolute bottom-2 left-2 bg-primary/90 backdrop-blur-sm text-primary-foreground px-2 py-1 rounded-lg text-xs font-semibold shadow-lg">
                   {item.price}
                 </div>
 
                 {/* Hover Icon */}
                 <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full">
-                    <Star className="w-4 h-4 text-gold" fill="currentColor" />
+                    <Star className="w-4 h-4 text-primary" fill="currentColor" />
                   </div>
                 </div>
               </div>
