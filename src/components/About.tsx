@@ -144,13 +144,6 @@ export const About = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             </div>
-
-            {/* Floating Card */}
-            <div className="absolute -bottom-6 -right-6 bg-secondary text-secondary-foreground p-6 rounded-xl shadow-gold-glow max-w-xs glass-dark animate-float border border-primary/20">
-              <div className="absolute -top-2 -left-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-xs font-bold">✓</div>
-              <p className="text-4xl font-bold text-gradient mb-1">15+</p>
-              <p className="text-sm text-secondary-foreground/90">Tahun Pengalaman Kuliner</p>
-            </div>
           </div>
 
           {/* Content */}
