@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
-import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Register ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
@@ -19,9 +21,47 @@ const galleryImages = [
 
 export const Gallery = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  const openLightbox = (index: number) => {
+    setSelectedImage(index);
+    setIsOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setIsOpen(false);
+    setTimeout(() => setSelectedImage(null), 300);
+  };
+
+  const goToPrevious = () => {
+    setSelectedImage((prev) => 
+      prev === null ? null : prev === 0 ? galleryImages.length - 1 : prev - 1
+    );
+  };
+
+  const goToNext = () => {
+    setSelectedImage((prev) => 
+      prev === null ? null : (prev + 1) % galleryImages.length
+    );
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+      
+      if (e.key === "ArrowLeft") goToPrevious();
+      if (e.key === "ArrowRight") goToNext();
+      if (e.key === "Escape") closeLightbox();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -146,6 +186,7 @@ export const Gallery = () => {
           {galleryImages.map((image, index) => (
             <div
               key={index}
+              onClick={() => openLightbox(index)}
               className="relative overflow-hidden rounded-2xl shadow-premium group cursor-pointer h-64 md:h-80 hover:shadow-gold-glow transition-all duration-700 border border-border/50"
             >
               <img
@@ -179,6 +220,59 @@ export const Gallery = () => {
           ))}
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-7xl w-full p-0 bg-black/95 border-primary/20">
+          <div className="relative w-full h-[90vh] flex items-center justify-center">
+            {/* Close Button */}
+            <Button
+              onClick={closeLightbox}
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 z-50 text-white hover:bg-white/10 rounded-full w-10 h-10"
+            >
+              <X className="h-6 w-6" />
+            </Button>
+
+            {/* Previous Button */}
+            <Button
+              onClick={goToPrevious}
+              variant="ghost"
+              size="icon"
+              className="absolute left-4 z-50 text-white hover:bg-white/10 rounded-full w-12 h-12"
+            >
+              <ChevronLeft className="h-8 w-8" />
+            </Button>
+
+            {/* Next Button */}
+            <Button
+              onClick={goToNext}
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 z-50 text-white hover:bg-white/10 rounded-full w-12 h-12"
+            >
+              <ChevronRight className="h-8 w-8" />
+            </Button>
+
+            {/* Image Display */}
+            {selectedImage !== null && (
+              <div className="relative w-full h-full flex flex-col items-center justify-center p-4">
+                <img
+                  src={galleryImages[selectedImage].src}
+                  alt={galleryImages[selectedImage].alt}
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 glass-dark px-6 py-3 rounded-full">
+                  <p className="text-white text-sm font-medium">
+                    {selectedImage + 1} / {galleryImages.length} - {galleryImages[selectedImage].alt}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
